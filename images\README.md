@@ -14,6 +14,13 @@ Training results:
 ![training results](https://github.com/user-attachments/assets/43258b18-94ba-4bd3-a740-4bd3de9a3c52)
 ![confusionmatix](https://github.com/user-attachments/assets/c6d5a603-addc-438d-8de4-d7d0c7cff4c9)
 
+
+sample caption:
+===== GENERATED REPORT =====
+
+Based on YOLO AI evidence, Gram-positive bacilli (100% | mean conf 51%) is the leading morphology in this smear. Cells display characteristic form and arrangement for this group, with features such as  elongated rods with parallel or grouped alignment. Staining behavior matches expectations for this classification. The visible stain tone appears consistent with the dominant class expectation, supporting the detector's assignment. Dominance appears clear in the field.
+
+
 BLIP and CLIP evaluation
 ![blip](https://github.com/user-attachments/assets/55b5ed19-1b85-469e-9472-89f550d8ecad)
 ![clip](https://github.com/user-attachments/assets/435c5675-5d10-494d-b70d-9004775b1acc)
