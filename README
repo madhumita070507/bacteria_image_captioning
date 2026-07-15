@@ -1,158 +1,400 @@
-🔬 Automated Gram-Stain Image Interpretation
-YOLOv8 Bacterial Detection + BLIP2 Microbiology Captioning + CLIP-Based Caption Evaluation
+# 🔬 Automated Gram-Stain Image Interpretation
+### YOLOv8 Bacterial Detection • BLIP-2 Caption Generation • CLIP/Rule-Based Caption Evaluation
 
-This repository contains a complete pipeline for automated interpretation of Gram-stained microscopic images using deep learning.
-The system integrates object detection, vision–language modeling, and quantitative caption evaluation to generate and validate structured microbiology reports.
+> An end-to-end deep learning pipeline for automated interpretation of Gram-stained microscopic images using object detection, vision-language models, and quantitative caption evaluation.
 
+---
 
+## 📌 Overview
 
-1. Research Objective
+Manual interpretation of Gram-stained microscopic images is a fundamental yet time-consuming task in microbiology laboratories. It requires trained personnel to accurately identify bacterial morphology, Gram reaction, staining characteristics, and organism distribution.
 
-Conventional Gram-stain interpretation requires expert assessment of:
+This project presents an automated AI-assisted workflow that combines:
 
-Bacterial Gram reaction
+- **YOLOv8** for bacterial detection and classification
+- **BLIP-2 (Flan-T5-XL)** for structured microbiology caption generation
+- **Rule-based and CLIP-based evaluation** for quantitative assessment of generated captions
 
-Cellular morphology (cocci/bacilli)
+The system produces standardized microbiological descriptions supported by detection statistics while minimizing hallucinations through prompt engineering and post-generation validation.
 
- smear characteristics
+> **Note:** This project is intended for research and educational purposes only and is **not designed for clinical diagnosis.**
 
-Stain color consistency
+---
 
-Relative dominance of different organisms
+# 🚀 Features
 
-This project proposes an AI-driven pipeline capable of producing structured, consistent, and evidence-supported microbiological descriptions for digital Gram-stain images.
+- Custom-trained YOLOv8 bacterial detector
+- Detection of four Gram-stain bacterial categories
+- Automatic counting and percentage calculation
+- Mean confidence estimation
+- Bounding-box visualization
+- Structured microbiology report generation
+- Prompt-constrained BLIP-2 captioning
+- Rule-based microbiology validation
+- CLIP-based semantic evaluation
+- Batch processing of Gram-stain images
+- CSV report generation
 
+---
 
-2. System Architecture
-2.1 YOLOv8 – Bacterial Detection & Classification
+# 🎯 Research Objective
 
-A custom-trained YOLOv8 detector identifies and classifies organisms into four groups:
-Class ID	Label	Description
-0	GPC	Gram-positive cocci
-1	GNC	Gram-negative cocci
-2	GPB	Gram-positive bacilli
-3	GNB	Gram-negative bacilli
+Conventional Gram-stain interpretation requires expert examination of:
 
-Outputs per image:
+- Gram reaction
+- Cellular morphology
+- Smear characteristics
+- Stain color consistency
+- Relative abundance of bacterial populations
 
-1)Bounding boxes
-2)Class labels
-3)Per-class counts
-4)Class percentages
-5)Mean confidences
-6)Boxed image visualizations
+The objective of this project is to automate this workflow using deep learning by generating structured, evidence-supported microbiological descriptions from digital Gram-stain images.
 
+---
 
-2.2 BLIP2-Flan-T5-XL – Structured Microbiology Captioning
+# 🏗️ System Architecture
 
-A vision–language model generates standardized, rule-constrained paragraphs describing:
-1)Dominant organism class
-2)Morphology + arrangement
-3)Expected Gram color vs visible stain
-4)Secondary class (if present)
-5)Consistency between detections and image appearance
+```
+                 Gram-Stain Image
+                        │
+                        ▼
+          ┌────────────────────────┐
+          │ YOLOv8 Object Detector │
+          └────────────────────────┘
+                        │
+        ┌───────────────┴────────────────┐
+        ▼                                ▼
+ Detection Statistics            Boxed Image
+(Class Counts, %, Confidence)
+        │
+        ▼
+ Prompt Construction
+        │
+        ▼
+┌─────────────────────────────┐
+│ BLIP-2 (Flan-T5-XL) Caption │
+└─────────────────────────────┘
+        │
+        ▼
+ Generated Structured Caption
+        │
+        ▼
+─────────────────────────────────────
+Caption Evaluation
+─────────────────────────────────────
+│
+├── Rule-Based Microbiology Evaluation
+│
+└── CLIP Semantic Similarity
+        │
+        ▼
+Final Evaluation Report
+```
 
+---
 
-A strict prompt ensures:
-1)Scientific accuracy
-2)No hallucinations
-3)No diagnosis or clinical suggestions
-4)One cohesive 5–6 sentence paragraph
-5)Numerical evidence (percentages/confidences) embedded in parentheses
+# 🔬 Model Components
 
-2.3 Caption Evaluation (Quantitative)
-To assess caption quality, a two-part evaluation method is used.
+## 1. YOLOv8 Bacterial Detection
 
-A) Rule-Based Microbiology Evaluation
-*The caption is checked for:
-*Mention of Gram reaction
-*Rods vs cocci morphology
-*Explicit stain-color description
-*Usage of numeric evidence
-*Validation sentence consistency
-*Sentence structure (5–6 sentences)
-*Absence of diagnosis
-*Agreement with YOLO Gram & morphology predictions
+A custom-trained **YOLOv8** detector identifies bacteria belonging to four microbiological classes.
 
-Rule Score: 0–100
-  
-3. Dataset Structure
+| Class ID | Label | Description |
+|----------|-------|-------------|
+| 0 | GPC | Gram-positive cocci |
+| 1 | GNC | Gram-negative cocci |
+| 2 | GPB | Gram-positive bacilli |
+| 3 | GNB | Gram-negative bacilli |
+
+### Outputs
+
+For every image, YOLO generates:
+
+- Bounding boxes
+- Predicted class labels
+- Per-class bacterial counts
+- Class percentages
+- Mean confidence scores
+- Annotated visualization images
+
+---
+
+## 2. BLIP-2 Structured Caption Generation
+
+The detected statistics are provided to **BLIP-2 (Flan-T5-XL)** using a carefully designed prompt that generates a standardized microbiology description.
+
+The generated paragraph includes:
+
+- Dominant bacterial class
+- Morphology
+- Gram reaction
+- Expected stain color
+- Secondary bacterial population (if present)
+- Detection consistency
+- Quantitative evidence
+
+### Prompt Constraints
+
+The language model is instructed to:
+
+- Produce scientifically consistent descriptions
+- Avoid hallucinated content
+- Avoid diagnostic conclusions
+- Generate a single cohesive paragraph
+- Produce approximately 5–6 sentences
+- Incorporate numerical detection statistics
+
+---
+
+## 3. Caption Evaluation
+
+Generated captions are evaluated using two complementary methods.
+
+### A. Rule-Based Microbiology Evaluation
+
+The caption is automatically checked for:
+
+- Gram reaction
+- Morphology (cocci/bacilli)
+- Stain-color description
+- Numerical evidence
+- Validation statement
+- Sentence structure
+- Absence of diagnosis
+- Agreement with YOLO predictions
+
+**Rule Score:** **0–100**
+
+---
+
+### B. CLIP-Based Semantic Evaluation
+
+A CLIP vision-language model measures semantic similarity between:
+
+- Gram-stain image
+- Generated microbiology caption
+
+This provides an additional quantitative assessment of caption-image consistency.
+
+---
+
+# 📂 Dataset
+
+The detector is trained using the Gram-stain bacterial dataset available on Zenodo.
+
+**Dataset**
+
+https://zenodo.org/records/10526360
+
+The detection dataset was converted from the original **640DataSet** into a YOLO-compatible detection format.
+
+---
+
+# 📁 Dataset Structure
+
+```
 dataset/
 │
 ├── GPC/
 │   ├── img1.jpg
 │   ├── ...
+│
 ├── GNC/
+│
 ├── GPB/
-├── GNB/
+│
+└── GNB/
+```
 
-datasetlink: https://zenodo.org/records/10526360
-DetectionDataSet: converted from 640DataSet to detection DataSet applied for YOLOv5 networks
+---
 
-Final reports:
-reports/
-├── captions/
-├── boxed_images/
-└── summary.csv
+# 📂 Project Structure
 
-Evaluation output:
-evaluation/
-├── eval_results.csv
-└── plots/
-
-
-4. How to Use
-4.1 Install Dependencies
-!pip install ultralytics transformers accelerate bitsandbytes
-!pip install git+https://github.com/openai/CLIP.git
-
-4.2 Run YOLO Detection + BLIP Captioning
-
-Inside the notebook:
-
-Set the path to YOLO weights.
-Set dataset directory.
-Run the processing cell.
-
-Outputs are saved to:
-/content/reports/
-
-
-4.3 Run Caption Evaluation
-
-Run the evaluation notebook/script to generate:
-eval_results.csv
-
-Applications:
-Automated Gram-stain interpretation
-Explainable AI for microbiology
-Dataset annotation & quality control
-Vision–language analysis for biomedical imaging
-Research benchmarking of multimodal models
-
-
-Limitations:
-Not intended for clinical diagnostic use
-Dependent on training data variability
-Caption quality may degrade on extremely complex smears
-BLIP2 may require GPU memory (quantized loading recommended)
-
-
-📦 Project Structure:
+```
+Automated-Gram-Stain-Interpretation/
+│
 ├── models/
-│   ├── yolo_best.pt
-├── reports/
-│   ├── captions/
-│   ├── boxed_images/
-│   └── summary.csv
+│   └── yolo_best.pt
+│
+├── dataset/
+│   ├── GPC/
+│   ├── GNC/
+│   ├── GPB/
+│   └── GNB/
+│
 ├── notebooks/
 │   ├── yolo_eval.ipynb
 │   ├── blip_caption.ipynb
 │   └── caption_eval.ipynb
+│
 ├── scripts/
 │   └── batch_captioning.py
+│
+├── reports/
+│   ├── boxed_images/
+│   ├── captions/
+│   └── summary.csv
+│
+├── evaluation/
+│   ├── eval_results.csv
+│   └── plots/
+│
 └── README.md
+```
 
+---
 
+# ⚙️ Installation
 
+Clone the repository.
 
+```bash
+git clone https://github.com/yourusername/Automated-Gram-Stain-Interpretation.git
+
+cd Automated-Gram-Stain-Interpretation
+```
+
+Install dependencies.
+
+```bash
+pip install ultralytics
+pip install transformers
+pip install accelerate
+pip install bitsandbytes
+pip install git+https://github.com/openai/CLIP.git
+```
+
+---
+
+# ▶️ Usage
+
+## Step 1 — YOLO Detection
+
+Load the trained YOLO weights.
+
+```python
+model = YOLO("models/yolo_best.pt")
+```
+
+Run inference on the dataset.
+
+The detector produces:
+
+- Annotated images
+- Detection statistics
+- Confidence scores
+
+---
+
+## Step 2 — BLIP-2 Caption Generation
+
+Configure:
+
+- Dataset directory
+- YOLO summary CSV
+- BLIP model
+
+Run the caption generation notebook.
+
+Generated captions are saved in
+
+```
+reports/captions/
+```
+
+---
+
+## Step 3 — Caption Evaluation
+
+Execute the evaluation notebook.
+
+The evaluation generates:
+
+```
+evaluation/
+├── eval_results.csv
+└── plots/
+```
+
+---
+
+# 📊 Output Files
+
+```
+reports/
+
+├── boxed_images/
+├── captions/
+└── summary.csv
+```
+
+```
+evaluation/
+
+├── eval_results.csv
+└── plots/
+```
+
+---
+
+# 📈 Evaluation Metrics
+
+The system reports:
+
+- Detection counts
+- Detection percentages
+- Mean confidence
+- Rule-based microbiology score
+- CLIP semantic similarity
+- Caption consistency
+
+---
+
+# 💡 Applications
+
+- Automated Gram-stain interpretation
+- Biomedical image captioning
+- Explainable AI for microbiology
+- Digital pathology research
+- Dataset annotation
+- Laboratory quality control
+- Vision-language benchmarking
+- Biomedical multimodal AI research
+
+---
+
+# ⚠️ Limitations
+
+- Intended for research purposes only
+- Not validated for clinical diagnosis
+- Performance depends on dataset diversity
+- Caption quality may decrease on highly complex polymicrobial smears
+- BLIP-2 requires substantial GPU memory
+- Quantized model loading is recommended for consumer GPUs
+
+---
+
+# 🛠 Technologies Used
+
+- Python
+- PyTorch
+- Ultralytics YOLOv8
+- Hugging Face Transformers
+- BLIP-2 (Flan-T5-XL)
+- OpenAI CLIP
+- Pandas
+- NumPy
+- Matplotlib
+
+---
+
+# 📚 Citation
+
+If you use this work in your research, please cite the corresponding publication (if available) and acknowledge the original Gram-stain dataset from Zenodo.
+
+---
+
+# 📄 License
+
+This project is released for academic and research use.
+
+Please refer to the repository license for usage terms.
